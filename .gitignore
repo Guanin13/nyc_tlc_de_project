@@ -15,10 +15,6 @@ __pycache__/
 logs/
 *.log
 
-#Airflow Config
-config/
-plugins/
-
 # VS Code
 .vscode/
 
