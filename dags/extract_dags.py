@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
 from src.extract import extract
@@ -16,6 +16,8 @@ with DAG(
     extract_task = PythonOperator(
         task_id='extract_task',
         python_callable=extract, 
+        retries = 3,
+        retry_delay=timedelta(minutes=2),  # Wait 2 minutes before retrying
         op_kwargs={
             'ds': '{{ ds }}'
         },
