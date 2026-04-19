@@ -14,9 +14,11 @@ jobs:
 
     env:
       DBT_PROFILES_DIR: .
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      DBT_S3_STAGING_DIR: ${{ secrets.DBT_S3_STAGING_DIR }}
+      DBT_SCHEMA: ${{ secrets.DBT_SCHEMA }}
+      DBT_DATABASE: ${{ secrets.DBT_DATABASE }}
+      DBT_WORKGROUP: ${{ secrets.DBT_WORKGROUP }}
 
     steps:
       - name: Checkout repository
@@ -30,20 +32,42 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install dbt-athena
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create profiles.yml
+        run: |
+          cat > profiles.yml <<EOF
+          nyc_taxi:
+            target: dev
+            outputs:
+              dev:
+                type: athena
+                region_name: "{{ env_var('AWS_REGION') }}"
+                s3_staging_dir: "{{ env_var('DBT_S3_STAGING_DIR') }}"
+                schema: "{{ env_var('DBT_SCHEMA') }}"
+                database: "{{ env_var('DBT_DATABASE') }}"
+                work_group: "{{ env_var('DBT_WORKGROUP') }}"
+                threads: 4
+          EOF
 
       - name: Check dbt version
         run: dbt --version
 
       - name: Install dbt packages
-        run: dbt deps
+        run: dbt deps --profiles-dir .
 
       - name: Debug dbt connection
-        run: dbt debug
+        run: dbt debug --profiles-dir .
 
       - name: Parse dbt project
-        run: dbt parse
+        run: dbt parse --profiles-dir .
 
       - name: Build silver model
-        run: dbt build --select silver_yellow_trip
+        run: dbt build --select silver_yellow_trip --profiles-dir .
