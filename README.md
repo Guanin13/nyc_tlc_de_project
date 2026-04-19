@@ -1,158 +1,210 @@
-# 🚕 NYC Taxi Data Engineering Pipeline (In Progress)
+# NYC Taxi Data Engineering Pipeline
 
-## 📌 Overview
-
-This project demonstrates an end-to-end **data engineering pipeline** that ingests NYC Taxi data from a public API and processes it through a modern **data lake architecture (Bronze → Silver → Gold)**.
-
-The pipeline leverages industry-standard tools including **Apache Airflow for orchestration**, **dbt for transformation**, and **Apache Iceberg on AWS S3** for scalable and versioned data storage. A **CI/CD pipeline** ensures code quality and reliability.
+![CI](https://img.shields.io/badge/CI-GitHub%20Actions-blue)
+![Python](https://img.shields.io/badge/Python-3.11-yellow)
+![dbt](https://img.shields.io/badge/dbt-1.0-orange)
+![AWS](https://img.shields.io/badge/AWS-S3%20%7C%20Athena%20%7C%20Glue-black)
+![Iceberg](https://img.shields.io/badge/Table%20Format-Apache%20Iceberg-blue)
 
 ---
 
-## 🏗️ Architecture
+## Overview
 
-```
+This project builds a **production-style data engineering pipeline** that ingests NYC Taxi trip data and transforms it into analytics-ready datasets using a **modern data lake architecture (Bronze → Silver → Gold)**.
+
+It demonstrates how real-world data platforms are designed using:
+
+- **Airflow** for orchestration  
+- **dbt** for transformation and testing  
+- **Apache Iceberg** for ACID data lakes  
+- **AWS S3 + Athena** for scalable storage and querying  
+
+---
+
+## Project Goals
+
+- Build an **end-to-end pipeline** from ingestion to analytics  
+- Apply **data engineering best practices** (partitioning, incremental loads, testing)  
+- Ensure **data quality and reliability** through CI/CD  
+- Simulate a **real production data stack**  
+
+---
+
+## Architecture
 API → Airflow → S3 (Bronze)
-        ↓
-     dbt + Iceberg
-        ↓
+↓
+dbt + Iceberg
+↓
 S3 (Silver → Gold)
-        ↓
-     Athena
-```
+↓
+Athena
+
+
+### Key Design Decisions
+
+- **S3 as data lake** → scalable & cost-efficient  
+- **Iceberg format** → ACID + time travel + schema evolution  
+- **dbt incremental models** → efficient processing  
+- **Partitioning (year/month)** → faster queries  
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
-* **Orchestration:** Apache Airflow
-* **Transformation:** dbt
-* **Table Format:** Apache Iceberg
-* **Storage:** AWS S3
-* **Query Engine:** AWS Athena
-* **Programming:** Python
-* **CI/CD:** GitHub Actions (pytest, ruff)
-* **Containerisation:** Docker & Docker Compose
+| Layer            | Tools Used |
+|------------------|-----------|
+| Orchestration    | Apache Airflow |
+| Transformation   | dbt |
+| Storage          | AWS S3 |
+| Table Format     | Apache Iceberg |
+| Query Engine     | AWS Athena |
+| Language         | Python |
+| CI/CD            | GitHub Actions (pytest, ruff, dbt test) |
+| Containerisation | Docker |
 
 ---
 
-## 📂 Project Structure (To Be Continued)
-
-```
-nyc_taxi_data_pipeline/
+## Project Structure
+nyc_tlc_de_project/
 │
-├── dags/                      # Airflow DAGs (pipeline orchestration)
-│   └── extract_dags.py
+├── .github/
+│ └── workflows/ # CI/CD pipelines
+│ ├── ci.yml
+│ └── dbt-ci.yml
 │
-├── src/                       # Core Python logic
-│   └── extract.py             # API extraction & URL builder
+├── dags/ # Airflow DAGs (orchestration)
+│ └── extract_dag.py
 │
-├── tests/                     # Unit tests
-│   └── test_extract_dag.py
+├── src/ # Core pipeline logic
+│ ├── init.py
+│ └── extract.py
 │
-├── .github/workflows/         # CI/CD pipeline
-│   └── ci.yml
+├── dbt_project/ # dbt transformation layer
+│ ├── models/
+│ │ └── silver/
+│ │ ├── silver_yellow_trip.sql
+│ │ ├── schema.yml
+│ │ └── sources.yml
+│ └── logs/ # dbt logs (ignored)
 │
-├── docker-compose.yaml        # Local Airflow setup
-├── requirements.txt           # Dependencies
+├── tests/ # dbt data tests (SQL-based)
+│ ├── test_dropoff_after_pickup.sql
+│ ├── test_non_negative_fields.sql
+│ └── test_total_amount_reconciles.sql
+│
+├── pytests/ # Python unit tests
+│ ├── init.py
+│ └── test_extract_dag.py
+│
+├── docker-compose.yaml # Local Airflow setup
+├── requirements.txt # Python dependencies
+├── dbt_project.yml # dbt configuration
+├── .gitignore
 └── README.md
-```
+---
+
+## Data Pipeline Flow
+
+### Bronze Layer — Raw Ingestion
+
+- Data fetched from NYC Taxi source (Parquet)
+- Stored in S3 as partitioned files
+s3://bucket/nyc_taxi/raw/year=YYYY/month=MM/
+
+
+✔ Append-only  
+✔ Immutable raw data  
+✔ Partitioned for scalability  
 
 ---
 
-## 🔄 Data Pipeline Flow
+### 🥈 Silver Layer — Cleaned Data (dbt + Iceberg)
 
-### 1. Extract → Bronze Layer (Finished)
+- Standardised schema  
+- Incremental processing  
+- Deduplicated using ingestion timestamp  
 
-* Data is pulled from the NYC Taxi API
-* Airflow schedules and manages extraction
-* Raw data is stored in **S3 as partitioned Parquet files**
+#### Transformations:
 
-```
-s3://bucket/nyc_taxi/bronze/year=YYYY/month=MM/
-```
+- Type casting (timestamps, numeric fields)  
+- Filtering invalid records  
+- Handling null values  
+- Removing duplicates (latest batch logic)  
 
----
-
-### 2. Transform → Silver Layer (In Progress)
-
-* dbt cleans and standardises raw data
-* Data is converted into **Apache Iceberg tables**
-* Partitioned for efficient querying
-
-Key transformations:
-
-* Data type casting
-* Filtering invalid records
-* Handling missing values
+✔ Stored as **Iceberg tables**  
+✔ Optimised for analytics  
 
 ---
 
-### 3. Business Layer → Gold (In Progress)
+### Gold Layer — Business Metrics *(In Progress)*
 
-* Aggregated, analytics-ready tables
-* Supports business insights such as:
+Planned outputs:
 
-  * Trips per day/month
-  * Revenue by vendor
-  * Average trip distance
-
----
-
-## ❄️ Why Apache Iceberg?
-
-* ACID transactions on data lakes
-* Time travel (snapshot versioning)
-* Schema evolution
-* Efficient partition pruning
-
-Iceberg enables warehouse-like reliability directly on S3.
+- Trips per day/month  
+- Revenue by vendor  
+- Average trip distance  
+- Demand trends  
 
 ---
 
-## 🔁 Orchestration (Airflow)
+## Data Quality & Testing
 
-Airflow DAG manages:
+### dbt Tests
 
-* API extraction
-* Upload to S3 (Bronze)
-* Triggering dbt transformations
+- Dropoff > Pickup  
+- Non-negative values  
+- Total amount consistency  
 
-Features:
+### Python Tests
 
-* Retry logic
-* Modular tasks
-* Logging and monitoring
-
----
-
-## 🧪 CI/CD Pipeline
-
-Implemented with **GitHub Actions**
-
-### Continuous Integration:
-
-* Run **pytest** for unit testing
-* Run **ruff** for linting
-* Validate code on every push and pull request
-
-### Future Improvements:
-
-* Automated deployment to AWS (EC2 / MWAA)
-* Data quality checks (e.g., Great Expectations)
+- Mocked API calls  
+- S3 upload validation  
+- URL generation logic  
 
 ---
 
-## 🧱 Data Lake Design
+## CI/CD Pipeline
 
-| Layer  | Purpose                        | Format  |
-| ------ | ------------------------------ | ------- |
-| Bronze | Raw ingested data              | Parquet |
-| Silver | Cleaned & structured data      | Iceberg |
-| Gold   | Business-ready aggregated data | Iceberg |
+Automated with **GitHub Actions**
+
+### Runs on every push:
+
+- `pytest` → unit tests  
+- `dbt test` → data validation  
+- `ruff` → linting  
+
+### Why this matters:
+
+Ensures:
+- No broken pipelines  
+- Reliable transformations  
+- Production-ready code  
 
 ---
 
-## ▶️ How to Run Locally
+## Why Apache Iceberg?
+
+Traditional data lakes lack reliability. Iceberg solves this:
+
+- ACID transactions on S3  
+- Time travel (snapshot rollback)  
+- Schema evolution  
+- Partition pruning  
+
+Enables warehouse-like behavior on a data lake  
+
+---
+
+## Example Analytics Use Cases
+
+- Peak taxi demand hours  
+- Vendor performance comparison  
+- Seasonal travel patterns  
+- Revenue analysis  
+
+---
+
+## How to Run Locally
 
 ### 1. Start Airflow
 
@@ -160,49 +212,32 @@ Implemented with **GitHub Actions**
 docker-compose up --build
 ```
 
-### 2. Access Airflow UI
+### 2. Open AirFlow UI
 
-```
+ ```
 http://localhost:8080
 ```
 
-### 3. Trigger Pipeline
+### 3. Run Pipeline
+* Enable DAG
+* Trigger extraction
 
-* Enable DAG from Airflow UI
-* Run extraction pipeline
-
-### 4. Run dbt Models
+### 4. Run dbt
 
 ```bash
 dbt run
+dbt test
 ```
-
 ---
 
-## 📊 Example Use Cases
-
-* Analyze taxi demand trends
-* Revenue and vendor performance
-* Time-based trip patterns
-* Demonstration of modern data lake architecture
-
----
-
-## 🚀 Future Enhancements
-
-* Data quality monitoring
+## Future Improvements
+* Gold layer completion
 * Dashboard integration (Power BI / Tableau)
-* Automated deployment to AWS
+* Deployment to AWS (EC2 / MWAA)
+* Data observability tools
 
 ---
 
-## 👤 Author
-
-Quang Son Nguyen
+## Author
+**Quang Son Nguyen**
 Master of Data Science – Monash University
-
----
-
-## ⭐ Key Takeaway
-
-This project showcases how to build a **modern, scalable data pipeline** using Airflow, dbt, Iceberg, and AWS — aligned with real-world data engineering practices.

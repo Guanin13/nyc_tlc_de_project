@@ -1,0 +1,12 @@
+name: nyc_taxi
+version: 1.0.0
+config-version: 2
+
+profile: nyc_taxi
+
+model-paths: ["dbt_project/models"]
+
+models:
+  nyc_taxi:
+    silver:
+      +materialized: incremental

@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: AwsDataCatalog
+    schema: nyc_taxi_raw
+    tables:
+      - name: yellow_trip_data_rawraw

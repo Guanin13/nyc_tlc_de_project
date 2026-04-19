@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: silver_yellow_trip
+    description: Cleaned and deduplicated NYC yellow taxi trips.
+
+    columns:
+      - name: trip_key
+        tests:
+          - not_null
+          - unique
+
+      - name: vendor_id
+        tests:
+          - not_null
+
+      - name: pickup_datetime
+        tests:
+          - not_null
+
+      - name: dropoff_datetime
+        tests:
+          - not_null
+
+      - name: pu_location_id
+        tests:
+          - not_null
+
+      - name: do_location_id
+        tests:
+          - not_null
+
+      - name: total_amount
+        tests:
+          - not_null
+
+      - name: fare_amount
+        tests:
+          - not_null
+
+      - name: extra
+        tests:
+          - not_null
+
+      - name: mta_tax
+        tests:
+          - not_null
+
+      - name: tip_amount
+        tests:
+          - not_null
+
+      - name: tolls_amount
+        tests:
+          - not_null
+
+      - name: improvement_surcharge
+        tests:
+          - not_null
+
+      - name: payment_type
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1, 2, 3, 4, 5]
+              quote: false
+
+      - name: store_and_fwd_flag
+        tests:
+          - accepted_values:
+              values: ['Y', 'N']
+              quote: true
+              config:
+                where: "store_and_fwd_flag is not null"

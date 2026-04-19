@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
 import boto3
 import os
@@ -53,6 +53,10 @@ def extract(ds: str, **kwargs) -> None:
     # Generate the source file URL and the target year/month folder values
     url, year, month = build_url(ds)
 
+    # Ingested Time and Batch ID
+    ingested_at = datetime.now(timezone.utc)
+    batch_id = ingested_at.strftime("%Y%m%dT%H%M%SZ")
+
     # Create an S3 client using AWS credentials stored in environment variables
     s3 = boto3.client(
         's3',
@@ -70,9 +74,8 @@ def extract(ds: str, **kwargs) -> None:
         r.raise_for_status()
 
         # Upload the streamed file directly to S3
-        # S3 key structure uses partition-style folders: raw/year=.../month=...
         s3.upload_fileobj(
             r.raw,
             bucket,
-            f'raw/year={year}/month={month}/yellow_tripdata_{year}-{month}.parquet'
+            f'raw/year={year}/month={month}/load_ts={batch_id}/yellow_tripdata_{year}-{month}.parquet'
         )

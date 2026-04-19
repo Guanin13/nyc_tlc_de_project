@@ -1,43 +1,56 @@
-# Python virtual environment
+# ----------------------
+# Python
+# ----------------------
 .venv/
+venv/
 env/
-
-# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
-
-# Environment variables / secrets
-.env
-
-# Airflow logs
-logs/
-*.log
-
-# Airflow config
-config/
-
-# VS Code
-.vscode/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Jupyter
-.ipynb_checkpoints/
-
-# pytest / coverage
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 
-# Build artifacts
-dist/
-build/
-*.egg-info/
+# ----------------------
+# Environment / secrets
+# ----------------------
+.env
 
-# Local temp files
+.user.yml
+profiles.yml
+
+# ----------------------
+# dbt artifacts
+# ----------------------
+target/
+dbt_packages/
+logs/
+dbt_project/logs/
+
+*.log
+
+# ----------------------
+# Airflow
+# ----------------------
+airflow-webserver.pid
+airflow-scheduler.pid
+airflow-worker.pid
+
+# ----------------------
+# VS Code / IDE
+# ----------------------
+.vscode/
+.idea/
+
+# ----------------------
+# macOS
+# ----------------------
+.DS_Store
+
+# ----------------------
+# Misc
+# ----------------------
 tmp/
 temp/
