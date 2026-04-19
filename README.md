@@ -65,6 +65,8 @@ Athena
 ---
 
 ## Project Structure
+
+```text
 nyc_tlc_de_project/
 │
 ├── .github/
@@ -101,6 +103,8 @@ nyc_tlc_de_project/
 ├── dbt_project.yml # dbt configuration
 ├── .gitignore
 └── README.md
+```
+
 ---
 
 ## Data Pipeline Flow
@@ -118,7 +122,7 @@ s3://bucket/nyc_taxi/raw/year=YYYY/month=MM/
 
 ---
 
-### 🥈 Silver Layer — Cleaned Data (dbt + Iceberg)
+### Silver Layer — Cleaned Data (dbt + Iceberg)
 
 - Standardised schema  
 - Incremental processing  
