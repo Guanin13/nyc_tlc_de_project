@@ -59,13 +59,13 @@ jobs:
         run: dbt --version
 
       - name: Install dbt packages
-        run: dbt deps --profiles-dir .
+        run: cd/dbt_project && dbt deps --profiles-dir .
 
       - name: Debug dbt connection
-        run: dbt debug --profiles-dir .
+        run: cd/dbt_project && dbt debug --profiles-dir .
 
       - name: Parse dbt project
-        run: dbt parse --profiles-dir .
+        run: cd/dbt_project && dbt parse --profiles-dir .
 
       - name: Build silver model
-        run: dbt build --select silver_yellow_trip --profiles-dir .
+        run: cd/dbt_project && dbt build --select silver_yellow_trip --profiles-dir .
