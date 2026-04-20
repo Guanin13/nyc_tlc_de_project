@@ -19,7 +19,7 @@ htmlcov/
 .env
 
 .user.yml
-profiles.yml
+dbt_project/profiles.yml
 
 # ----------------------
 # dbt artifacts
