@@ -60,10 +60,10 @@ jobs:
         run: dbt --version
 
       - name: Debug dbt connection
-        run: cd dbt_project && dbt debug .
+        run: cd dbt_project && dbt debug
 
       - name: Parse dbt project
-        run: cd dbt_project && dbt parse .
+        run: cd dbt_project && dbt parse
 
       - name: Build silver model
-        run: cd dbt_project && dbt build --select silver_yellow_trip .
+        run: cd dbt_project && dbt build --select silver_yellow_trip
