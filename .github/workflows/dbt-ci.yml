@@ -49,6 +49,7 @@ jobs:
                 type: athena
                 region_name: "{{ env_var('AWS_REGION') }}"
                 s3_staging_dir: "{{ env_var('DBT_S3_STAGING_DIR') }}"
+                s3_data_dir: "{{ env_var('S3_DATA_DIR') }}"
                 schema: "{{ env_var('DBT_SCHEMA') }}"
                 database: "{{ env_var('DBT_DATABASE') }}"
                 work_group: "{{ env_var('DBT_WORKGROUP') }}"
@@ -57,9 +58,6 @@ jobs:
 
       - name: Check dbt version
         run: dbt --version
-
-      - name: Install dbt packages
-        run: cd dbt_project && dbt deps --profiles-dir .
 
       - name: Debug dbt connection
         run: cd dbt_project && dbt debug --profiles-dir .

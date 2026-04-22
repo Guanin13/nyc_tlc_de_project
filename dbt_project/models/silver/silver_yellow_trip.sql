@@ -1,6 +1,7 @@
 {{ config(
     materialized='incremental',
     table_type='iceberg',
+    location='s3://nyc-tlc-data-sonnguyen/silver/silver_yellow_trip',
     incremental_strategy='merge',
     unique_key='trip_key',
     format='parquet',

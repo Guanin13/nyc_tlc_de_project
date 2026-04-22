@@ -4,7 +4,7 @@ config-version: 2
 
 profile: nyc_taxi
 
-model-paths: ["dbt_project/models"]
+model-paths: ["models"]
 
 models:
   nyc_taxi:
