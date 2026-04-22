@@ -17,6 +17,7 @@ jobs:
       DBT_SCHEMA: ${{ secrets.DBT_SCHEMA }}
       DBT_DATABASE: ${{ secrets.DBT_DATABASE }}
       DBT_WORKGROUP: ${{ secrets.DBT_WORKGROUP }}
+      S3_DATA_DIR: ${{ secrets.S3_DATA_DIR }}
 
     steps:
       - name: Checkout repository
