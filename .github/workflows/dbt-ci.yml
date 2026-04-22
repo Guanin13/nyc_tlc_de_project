@@ -41,7 +41,7 @@ jobs:
 
       - name: Create profiles.yml
         run: |
-          cat > profiles.yml <<EOF
+          cat > dbt_project/profiles.yml <<EOF
           nyc_taxi:
             target: dev
             outputs:
