@@ -68,3 +68,6 @@ jobs:
 
       - name: Build silver model
         run: cd dbt_project && dbt build --select silver_yellow_trip
+      
+      - name: Build gold model
+        run: cd dbt_project && dbt build --select gold_yellow_trip_fare_ml
