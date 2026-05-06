@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: gold_yellow_trip_fare_ml
+    description: "Machine-learning-ready Gold table for predicting NYC Yellow Taxi fare amount."
+
+    columns:
+      - name: trip_key
+        tests:
+          - not_null
+          - unique
+
+      - name: pickup_datetime
+        tests:
+          - not_null
+
+      - name: trip_distance
+        tests:
+          - not_null
+
+      - name: passenger_count
+        tests:
+          - not_null
+
+      - name: target_fare_amount
+        tests:
+          - not_null
